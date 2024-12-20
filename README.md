@@ -32,7 +32,7 @@ Automate the process of logging into **Amazon**, accessing the **Bestsellers** p
 
 ## 🔑 Usage
 
-1. **Run the script and input your Amazon credentials when prompted:**
+1.**Run the script and input your Amazon credentials when prompted:**
    
    Enter email: example@email.com
    
