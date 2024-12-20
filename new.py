@@ -9,80 +9,86 @@ import time
 import re
 from collections import defaultdict
 
-# driver.quit()
-# Initialize WebDriver
+email = input("Enter email:")
+password= input("Enter password: ")
+
 driver = webdriver.Firefox()
-driver.get("https://www.amazon.com/ap/signin")
 
-email = input("Enter your email-id: ")
-password = input("Enter your password: ")
-# Find and fill the email field
-email_field = driver.find_element(By.NAME, "email")
-email_field.send_keys(email)
-email_field.send_keys(Keys.RETURN)
-
-time.sleep(2)  # Wait for next page to load
-
-# Find and fill the password field
-password_field = driver.find_element(By.ID, "ap_password")
-password_field.send_keys(password)
-password_field.send_keys(Keys.RETURN)
-
-time.sleep(2)
-print("Logged in successfully")
-driver.close()
-options = Options()
-options.set_preference("general.useragent.override", 
-                       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
-
-driver = webdriver.Firefox(options=options)
 try:
-    # Open Amazon Best Sellers page
-    driver.get("https://www.amazon.in/gp/bestsellers/?ref_=nav_em_cs_bestsellers_0_1_1_2")
+    driver.get("https://www.amazon.com/ap/signin?openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0")
+    
+    
+    time.sleep(2)
 
-    # Wait until the page loads completely by checking for a specific element
-    wait = WebDriverWait(driver, 10)
-    wait.until(EC.presence_of_element_located((By.ID, "zg_left_col1")))
+    email_field = driver.find_element(By.NAME, "email")
+    email_field.send_keys(email)
+    email_field.send_keys(Keys.RETURN)
 
-    # Check if search box is present
-    try:
-        search_box = driver.find_element(By.ID, "twotabsearchtextbox")
-        print("Search box found!")
-    except Exception as e:
-        print("Could not find search box:", str(e))
+    time.sleep(2) 
 
-    # Locate the Best Sellers content
-    try:
-        elements = driver.find_elements(By.ID, "zg_left_col1")
-        # Print each item's text content
-        categories = defaultdict(list)  # Dictionary with category names as keys and list of products as values
-        current_category = "General"  # Default category
-        product_pattern = re.compile(r"#\d+\n(.*?)(\n\d[\d,]*\n₹[\d,.]+)", re.S)  # Match product details
+    password_field = driver.find_element(By.NAME, "password")
+    password_field.send_keys(password)
+    password_field.send_keys(Keys.RETURN)
 
-        # Split data based on categories
-        for element in elements:
-            data = element.text
-            lines = data.splitlines()
-            for line in lines:
-                line = line.strip()
-                if "Bestsellers in" in line:  # Identify new category
-                    current_category = line.replace("See More", "").strip()
-                elif re.match(r"#\d+", line):  # Start capturing product details
-                    match = product_pattern.match("\n".join(lines[lines.index(line):]))  # Try to match a product block
-                    if match:
-                        product_details = match.group(1).strip() + " " + match.group(2).strip()
-                        categories[current_category].append(product_details)
+    time.sleep(2) 
+    account_link = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.CLASS_NAME, "nav-line-1-container"))
+)
+    print(account_link.text)
+    if "sign in" not in account_link.text:
+        print("Logged in successfully")
+        options = Options()
+        options.set_preference("general.useragent.override", 
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36")
 
-            # Output the categorized bestsellers
-            for category, products in categories.items():
-                print(f"\nCategory: {category}")
-                for product in products:
-                    print(product)
-    except Exception as e:
-        print("Error while finding Best Sellers content:", str(e))
+        driver = webdriver.Firefox(options=options)
+        try:
+            driver.get("https://www.amazon.in/gp/bestsellers/?ref_=nav_em_cs_bestsellers_0_1_1_2")
 
+            
+            wait = WebDriverWait(driver, 10)
+            wait.until(EC.presence_of_element_located((By.ID, "zg_left_col1")))
+            try:
+                search_box = driver.find_element(By.ID, "twotabsearchtextbox")
+                print("Search box found!")
+            except Exception as e:
+                print("Could not find search box:", str(e))
+
+            try:
+                elements = driver.find_elements(By.ID, "zg_left_col1")
+                categories = defaultdict(list)  
+                current_category = "General"  
+                product_pattern = re.compile(r"#\d+\n(.*?)(\n\d[\d,]*\n₹[\d,.]+)", re.S)  
+                for element in elements:
+                    data = element.text
+                    lines = data.splitlines()
+                    for line in lines:
+                        line = line.strip()
+                        if "Bestsellers in" in line:  
+                            current_category = line.replace("See More", "").strip()
+                        elif re.match(r"#\d+", line):  # Start capturing product details
+                            match = product_pattern.match("\n".join(lines[lines.index(line):]))  # Try to match a product block
+                            if match:
+                                product_details = match.group(1).strip() + " " + match.group(2).strip()
+                                categories[current_category].append(product_details)
+                    
+                    for category, products in categories.items():
+                        print(f"\nCategory: {category}")
+                        for product in products:
+                            print(product)
+                    driver.close()
+            except Exception as e:
+                print("Error while finding Best Sellers content:", str(e))
+
+        finally:
+          
+            print("Terminating browser...")
+            time.sleep(1)
+            driver.quit()
+
+    else:
+        print("Login failed")
+except Exception:
+    print("Wrong login credentials.")
 finally:
-    # Clean up
-    print("Terminating browser...")
-    time.sleep(3)
     driver.quit()
