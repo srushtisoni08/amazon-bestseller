@@ -33,7 +33,6 @@ Automate the process of logging into **Amazon**, accessing the **Bestsellers** p
 ## 🔑 Usage
 
 1.Run the script and input your Amazon credentials when prompted:
-
   Enter email: example@email.com  
   Enter password: ********
 
@@ -46,6 +45,7 @@ Automate the process of logging into **Amazon**, accessing the **Bestsellers** p
 ## ⚠️ Disclaimer
 
 -This script is for educational purposes only.
+
 -Scraping Amazon without permission may violate their Terms of Service. Use responsibly
 
 ---
