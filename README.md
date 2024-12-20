@@ -32,9 +32,10 @@ Automate the process of logging into **Amazon**, accessing the **Bestsellers** p
 
 ## 🔑 Usage
 
-1.Run the script and input your Amazon credentials when prompted:
-  Enter email: example@email.com  
-  Enter password: ********
+1. **Run the script and input your Amazon credentials when prompted:**
+   Enter email: example@email.com
+   Enter password: ********
+
 
 2.The script will log in, navigate to the Amazon Bestsellers page, and extract data.
 
